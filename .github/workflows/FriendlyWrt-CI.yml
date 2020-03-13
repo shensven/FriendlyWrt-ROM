@@ -1,0 +1,85 @@
+name: FriendlyWrt for NanoPi R2S
+
+on:
+  push:
+    paths:
+      - 'build-number'
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@master
+        with:
+          ref: master
+
+      - name: Init Environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi `docker images -q`
+          sudo rm -rf /usr/share/dotnet /etc/mysql /etc/php /etc/apt/sources.list.d
+          sudo -E apt-get -y purge azure-cli ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php*
+          sudo -E apt-get update
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash
+          git clone https://github.com/friendlyarm/repo
+          sudo cp repo/repo /usr/bin/
+
+          df -h
+
+      - name: Get Source Code
+        run: |
+          rm -rf friendlywrt-rk3328
+          mkdir friendlywrt-rk3328
+          cd friendlywrt-rk3328
+          repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master-v19.07.1 -m rk3328.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
+          repo sync -c  --no-clone-bundle
+
+      - name: Update Feeds
+        run: |
+          cd friendlywrt-rk3328/friendlywrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Generate Configuration File
+        run: |
+          rm -f friendlywrt-rk3328/friendlywrt/.config*
+          cp config friendlywrt-rk3328/friendlywrt/.config
+
+      - name: Make defconfig
+        run: |
+          cd friendlywrt-rk3328/friendlywrt
+          ./scripts/diffconfig.sh > ../configs/config_rk3328_shensven
+
+      - name: Set My Configuration
+        run: |
+          cd friendlywrt-rk3328/device/friendlyelec/rk3328
+          sed -i 's/TARGET_FRIENDLYWRT_CONFIG=config_rk3328/TARGET_FRIENDLYWRT_CONFIG=config_rk3328_shensven/' nanopi_r2s.mk
+
+      - name: Build FriendlyWrt
+        run: |
+          cd friendlywrt-rk3328
+          ./build.sh nanopi_r2s.mk
+          df -h
+
+      - name: Assemble Artifact
+        run: |
+          rm -rf artifact
+          mkdir artifact
+          cp friendlywrt-rk3328/configs/config_rk3328_shensven artifact
+          gzip friendlywrt-rk3328/out/*.img
+          mv friendlywrt-rk3328/out/*.img.gz artifact
+          
+      - name: Upload Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: FriendlyWrt for RK3328 Build
+          path: artifact
+          
