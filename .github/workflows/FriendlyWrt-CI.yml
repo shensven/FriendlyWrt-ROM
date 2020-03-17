@@ -31,41 +31,40 @@ jobs:
           wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash
           git clone https://github.com/friendlyarm/repo
           sudo cp repo/repo /usr/bin/
-
           df -h
 
       - name: Get Source Code
         run: |
           rm -rf friendlywrt-rk3328
           mkdir friendlywrt-rk3328
-          cd friendlywrt-rk3328
+          cd friendlywrt-rk3328/
           repo init -u https://github.com/friendlyarm/friendlywrt_manifests -b master-v19.07.1 -m rk3328.xml --repo-url=https://github.com/friendlyarm/repo  --no-clone-bundle
           repo sync -c  --no-clone-bundle
 
       - name: Update Feeds
         run: |
-          cd friendlywrt-rk3328/friendlywrt
+          cd friendlywrt-rk3328/friendlywrt/
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
       - name: Generate Configuration File
         run: |
-          rm -f friendlywrt-rk3328/friendlywrt/.config*
+          rm -f friendlywrt-rk3328/friendlywrt/.config
           cp config friendlywrt-rk3328/friendlywrt/.config
 
       - name: Make defconfig
         run: |
-          cd friendlywrt-rk3328/friendlywrt
+          cd friendlywrt-rk3328/friendlywrt/
           ./scripts/diffconfig.sh > ../configs/config_rk3328_shensven
 
       - name: Set My Configuration
         run: |
-          cd friendlywrt-rk3328/device/friendlyelec/rk3328
+          cd friendlywrt-rk3328/device/friendlyelec/rk3328/
           sed -i 's/TARGET_FRIENDLYWRT_CONFIG=config_rk3328/TARGET_FRIENDLYWRT_CONFIG=config_rk3328_shensven/' nanopi_r2s.mk
 
       - name: Build FriendlyWrt
         run: |
-          cd friendlywrt-rk3328
+          cd friendlywrt-rk3328/
           ./build.sh nanopi_r2s.mk
           df -h
 
