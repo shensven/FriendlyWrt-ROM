@@ -60,7 +60,7 @@ jobs:
       - name: Set My Configuration
         run: |
           rm -f friendlywrt-rk3328/configs/config_rk3328
-          cp config friendlywrt-rk3328/config_rk3328
+          cp config friendlywrt-rk3328/configs/config_rk3328
 
       - name: Build FriendlyWrt
         run: |
