@@ -72,7 +72,6 @@ jobs:
         run: |
           rm -rf artifact
           mkdir artifact
-      #   cp friendlywrt-rk3328/configs/config_rk3328_shensven artifact
           cp friendlywrt-rk3328/out/*.img artifact
           
       - name: Upload Artifact
