@@ -47,20 +47,20 @@ jobs:
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
-      - name: Generate Configuration File
-        run: |
-          rm -f friendlywrt-rk3328/friendlywrt/.config
-          cp config friendlywrt-rk3328/friendlywrt/.config
+      #- name: Generate Configuration File
+      #  run: |
+      #    rm -f friendlywrt-rk3328/friendlywrt/.config
+      #    cp config friendlywrt-rk3328/friendlywrt/.config
 
-      - name: Make defconfig
-        run: |
-          cd friendlywrt-rk3328/friendlywrt/
-          ./scripts/diffconfig.sh > ../configs/config_rk3328_shensven
+      #- name: Make defconfig
+      #  run: |
+      #    cd friendlywrt-rk3328/friendlywrt/
+      #    ./scripts/diffconfig.sh > ../configs/config_rk3328_shensven
 
       - name: Set My Configuration
         run: |
-          cd friendlywrt-rk3328/device/friendlyelec/rk3328/
-          sed -i 's/TARGET_FRIENDLYWRT_CONFIG=config_rk3328/TARGET_FRIENDLYWRT_CONFIG=config_rk3328_shensven/' nanopi_r2s.mk
+          rm -f friendlywrt-rk3328/configs/config_rk3328
+          cp config friendlywrt-rk3328/config_rk3328
 
       - name: Build FriendlyWrt
         run: |
@@ -72,7 +72,7 @@ jobs:
         run: |
           rm -rf artifact
           mkdir artifact
-          cp friendlywrt-rk3328/configs/config_rk3328_shensven artifact
+      #   cp friendlywrt-rk3328/configs/config_rk3328_shensven artifact
           cp friendlywrt-rk3328/out/*.img artifact
           
       - name: Upload Artifact
