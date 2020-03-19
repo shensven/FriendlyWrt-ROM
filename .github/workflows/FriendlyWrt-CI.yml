@@ -29,6 +29,8 @@ jobs:
           sudo -E apt-get -y autoremove --purge
           sudo -E apt-get clean
           wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bionic/master/install.sh | bash
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git clone https://github.com/friendlyarm/repo
           sudo cp repo/repo /usr/bin/
           df -h
