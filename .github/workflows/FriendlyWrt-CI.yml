@@ -3,16 +3,13 @@ name: FriendlyWrt for NanoPi R2S
 on:
   push:
     paths:
-      - 'build-number'
+      - "build-number"
 
 jobs:
-
   build:
-
     runs-on: ubuntu-18.04
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@master
         with:
@@ -47,7 +44,7 @@ jobs:
         run: |
           rm -f friendlywrt-rk3328/configs/config_rk3328
           cp config_rk3328_shensven friendlywrt-rk3328/configs/config_rk3328
-          
+
       - name: Build FriendlyWrt
         run: |
           cd friendlywrt-rk3328/
@@ -60,10 +57,9 @@ jobs:
           mkdir artifact
           cp friendlywrt-rk3328/out/*.img artifact
           cp friendlywrt-rk3328/configs/config_rk3328 artifact
-          
+
       - name: Upload Artifact
         uses: actions/upload-artifact@master
         with:
           name: FriendlyWrt for NanoPi R2S
           path: artifact
-          
