@@ -53,9 +53,9 @@ jobs:
 
       - name: Assemble Artifact
         run: |
-          rm -rf artifact
           mkdir artifact
-          cp friendlywrt-rk3328/out/*.img artifact
+          gzip friendlywrt-rk3328/out/*.img
+          cp friendlywrt-rk3328/out/*.img.gz artifact
           cp friendlywrt-rk3328/configs/config_rk3328 artifact
 
       - name: Upload Artifact
