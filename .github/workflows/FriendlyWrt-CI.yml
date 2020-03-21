@@ -2,8 +2,12 @@ name: FriendlyWrt for NanoPi R2S
 
 on:
   push:
+    branches:
+      - master
     paths:
-      - "build-number"
+      - 'build-number'
+    tags-ignore:
+      - build*
 
 jobs:
   build:
